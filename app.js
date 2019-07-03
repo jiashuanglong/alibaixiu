@@ -14,6 +14,7 @@ app.set("view engine", "ejs");  //設置渲染模板使用的引擎
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+app.use(express.static("views"));
 app.use("/assets", express.static("assets"));
 app.use("/static", express.static("assets"));
 

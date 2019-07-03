@@ -26,4 +26,16 @@ router.get("/deluser", (req, res) =>
     usersContr.delUser(req, res);
 });
 
+// 處理點擊編輯用戶
+router.get("/profile", (req, res) =>
+{
+    usersContr.getProfile(req, res);
+});
+
+// 處理提交編輯用戶
+router.post("/profileuser", (req, res) =>
+{
+    usersContr.postProfile(req, res);
+});
+
 module.exports = router;
