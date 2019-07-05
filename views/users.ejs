@@ -85,7 +85,7 @@
 
 <!-- 後續加載數據渲染模板 -->
 <script id="tmp" type="text/html">
-  {{ each }}
+  {{ each data }}
   <tr>
     <td class="text-center"><input class="bodyCheckbox" idd="{{ $value.id }}" onclick="bodyChecked()" type="checkbox"></td>
     <td class="text-center"><img class="avatar" src="{{ $value.avatar ? $value.avatar : '../assets/img/default.png' }}"></td>
@@ -112,8 +112,13 @@
       url: "/regetusers",
       success: result =>
       {
-        let str = template("tmp", result);
-        document.querySelector("#tbody").innerHTML = str;
+        if (result.status == 200)
+        {
+          let str = template("tmp", result);
+          document.querySelector("#tbody").innerHTML = str;
+        }
+        else
+          alert(result.msg);
       }
     });
   }
@@ -126,7 +131,6 @@
     // serialize()是jquery中form表單的方法，返回form表單提交的所有參數，結果如下：
     // email=linhong%40163.com&slug=%E5%AF%B6%E5%AF%B6&nickname=%E6%9E%97%E7%B4%85&password=123456
     let params = $("#addForm").serialize();
-    let inputArr = document.querySelectorAll(".form-control");
     $.ajax({
       url: "/adduser",
       method: "post",
@@ -137,11 +141,8 @@
         if (result.status == 200)
         {
           regetUsers ();
-          // 清空form表單
-          for (let i = 0; i < inputArr.length; i++)
-          {
-            inputArr[i].value = "";
-          }
+          // 重置form表單
+          document.querySelector("#addForm").reset();
         }
       }
     });
@@ -234,7 +235,7 @@
       }
       else
         alert("出錯啦！");
+      document.querySelector("#batchRemove").style.display = "none";
     }
-    document.querySelector("#batchRemove").style.display = "none";
   }
 </script>

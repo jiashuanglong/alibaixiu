@@ -10,8 +10,10 @@ module.exports.myQuery = (strSql, callback) =>
     connection.connect();
     connection.query(strSql, (err, results) =>
     {
-        if (err) console.log(err);
-        callback(results);
+        if (err)
+            callback(err, null);
+        else
+            callback(null, results);
     });
     connection.end();
 }

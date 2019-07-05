@@ -1,11 +1,17 @@
-const userdb = require("../model/userdb.js");
+const db = require("../model/baixiudb.js");
 
 // 處理打開頁面時加載所有用戶
 exports.getUsers = (req, res) =>
 {
-    userdb.myQuery("SELECT * FROM users", result =>
+    db.myQuery("SELECT * FROM users", (err, result) =>
     {
-        res.render("users", {result: result});
+        
+        if (err)
+        {
+            res.send("出錯啦！");
+        }
+        else
+            res.render("users", {result: result});
     });
 }
 
@@ -15,29 +21,45 @@ exports.adduser = (req, res) =>
     let obj = req.body;
     // let addSql = `INSERT INTO users (slug, email, password, nickname, avatar, bio, status) VALUES ("${obj.slug}", "${obj.email}", "${obj.password}", "${obj.nickname}", "/static/uploads/avatar.jpg", null, "activated")`;
     let addSql = `INSERT INTO users (slug, email, password, nickname, status) VALUES ("${obj.slug}", "${obj.email}", "${obj.password}", "${obj.nickname}", "activated")`;
-    userdb.myQuery(addSql, results =>
+    db.myQuery(addSql, (err, result) =>
     {
-        let myres = {};
-        if (results.affectedRows >= 1)
+        if (err)
         {
-            myres.msg = "添加成功！";
-            myres.status = "200";
+            res.send({
+                status: 400,
+                msg: "出錯啦！"
+            });
         }
         else
         {
-            myres.msg = "出錯啦";
-            myres.status = "400";
+            res.send({
+                status: 200,
+                msg: "添加成功！"
+            });
         }
-        res.send(myres);
     });
 }
 
 // 處理後續加載所有用戶
 exports.regetUsers = (req, res) =>
 {
-    userdb.myQuery("SELECT * FROM users", result =>
+    db.myQuery("SELECT * FROM users", (err, result) =>
     {
-        res.send(result);
+        if (err)
+        {
+            res.send({
+                status: 400,
+                msg: "出錯啦！"
+            });
+        }
+        else
+        {
+            res.send({
+                status: 200,
+                msg: "查詢成功！",
+                data: result
+            });
+        }
     });
 }
 
@@ -46,20 +68,22 @@ exports.delUser = (req, res) =>
 {
     let id = req.query.id;
     let delSql = `DELETE FROM users WHERE id = ${id}`;
-    userdb.myQuery(delSql, result =>
+    db.myQuery(delSql, (err, result) =>
     {
-        let myres = {};
-        if (result.affectedRows >= 1)
+        if (err)
         {
-            myres.msg = "刪除成功！";
-            myres.status = "200";
+            res.send({
+                status: 400,
+                msg: "出錯啦！"
+            });
         }
         else
         {
-            myres.msg = "出錯啦";
-            myres.status = "400";
+            res.send({
+                status: 200,
+                msg: "刪除成功！"
+            });
         }
-        res.send(myres);
     });
 }
 
@@ -68,9 +92,12 @@ exports.getProfile = (req, res) =>
 {
     let id = req.query.id;
     let getUser = `SELECT * FROM users WHERE id = ${id}`;
-    userdb.myQuery(getUser, result =>
+    db.myQuery(getUser, (err, result) =>
     {
-        res.render("profile", result[0]);
+        if (err)
+            alert("出錯啦！");
+        else
+            res.render("profile", result[0]);
     });
 }
 
@@ -79,23 +106,21 @@ exports.postProfile = (req, res) =>
 {
     let body = req.body;
     let profileUser = `UPDATE users SET slug = "${body.slug}", nickname = "${body.nickname}", bio = "${body.bio}" WHERE id = ${body.id}`;
-    userdb.myQuery(profileUser, result =>
+    db.myQuery(profileUser, (err, result) =>
     {
-        let myres = {};
-        if (result.affectedRows >= 1)
+        if (err)
         {
-            myres.msg = "修改成功！";
-            myres.status = "200";
+            res.send({
+                status: 400,
+                msg: "出錯啦！"
+            });
         }
         else
         {
-            myres.msg = "出錯啦";
-            myres.status = "400";
+            res.send({
+                status: 200,
+                msg: "修改成功！"
+            });
         }
-        res.send(myres);
-        // if (result.affectedRows >= 1)
-        //     res.send("<script>alert('修改成功！');window.location='http://localhost:3000/users';</script>");
-        // else
-        //     res.send("<script>alert('出錯啦！');</script>");
     });
 }

@@ -2,6 +2,7 @@ const express = require("express");
 const ejs = require("ejs");
 const demoRouter = require("./router/demoRouter.js");
 const usersRouter = require("./router/usersRouter.js");
+const categoriesRouter = require("./router/categoriesRouter.js");
 const app = express();
 
 const bodyParser = require("body-parser");
@@ -20,5 +21,6 @@ app.use("/static", express.static("assets"));
 
 app.use(demoRouter);
 app.use(usersRouter);
+app.use(categoriesRouter);
 
 app.listen(3000);
