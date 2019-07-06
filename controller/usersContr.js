@@ -5,7 +5,6 @@ exports.getUsers = (req, res) =>
 {
     db.myQuery("SELECT * FROM users", (err, result) =>
     {
-        
         if (err)
         {
             res.send("出錯啦！");
@@ -19,7 +18,6 @@ exports.getUsers = (req, res) =>
 exports.adduser = (req, res) =>
 {
     let obj = req.body;
-    // let addSql = `INSERT INTO users (slug, email, password, nickname, avatar, bio, status) VALUES ("${obj.slug}", "${obj.email}", "${obj.password}", "${obj.nickname}", "/static/uploads/avatar.jpg", null, "activated")`;
     let addSql = `INSERT INTO users (slug, email, password, nickname, status) VALUES ("${obj.slug}", "${obj.email}", "${obj.password}", "${obj.nickname}", "activated")`;
     db.myQuery(addSql, (err, result) =>
     {

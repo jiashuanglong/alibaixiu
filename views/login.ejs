@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Sign in &laquo; Admin</title>
+  <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+  <div class="login">
+    <form id="loginForm" class="login-wrap">
+      <img class="avatar" src="../assets/img/default.png">
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong> 用户名或密码错误！
+      </div> -->
+      <div class="form-group">
+        <label for="email" class="sr-only">邮箱</label>
+        <input name="email" id="email" type="email" class="form-control" placeholder="邮箱" autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password" class="sr-only">密码</label>
+        <input name="password" id="password" type="password" class="form-control" placeholder="密码">
+      </div>
+      <a id="loginBtn" class="btn btn-primary btn-block" href="javascript:void(0)">登 录</a>
+    </form>
+  </div>
+</body>
+<script src="../assets/vendors/jquery/jquery.min.js"></script>
+<script>
+  // 點擊登錄按鈕
+  const loginBtn = document.querySelector("#loginBtn");
+  loginBtn.onclick = () =>
+  {
+    let param = $("#loginForm").serialize();
+    let email = document.querySelector("#email").value;
+    let password = document.querySelector("#password").value;
+    if (email == "" && password == "")
+      alert("您好，請輸入郵箱和密碼");
+    else if (email == "")
+      alert("您好，郵箱不能為空");
+    else if (password == "")
+      alert("您好，密碼不能為空");
+    else
+    {
+      $.ajax({
+        method: "post",
+        url: "/postLogin",
+        data: param,
+        success: result =>
+        {
+          alert(result.msg);
+          if (result.status == 200)
+            window.location = "/";
+        }
+      });
+    }
+  }
+</script>
+</html>
