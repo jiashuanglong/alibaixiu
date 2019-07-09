@@ -1,4 +1,6 @@
+const path = require("path");
 const db = require("../model/baixiudb.js");
+const formidable = require("formidable");
 
 // 處理打開頁面時加載所有用戶
 exports.getUsers = (req, res) =>
@@ -102,23 +104,67 @@ exports.getProfile = (req, res) =>
 // 處理提交編輯用戶
 exports.postProfile = (req, res) =>
 {
-    let body = req.body;
-    let profileUser = `UPDATE users SET slug = "${body.slug}", nickname = "${body.nickname}", bio = "${body.bio}" WHERE id = ${body.id}`;
-    db.myQuery(profileUser, (err, result) =>
+    let form = new formidable.IncomingForm();
+    // 保留上傳的圖片的擴展名
+    form.keepExtensions = true;
+    // 設置上傳圖片保存地址
+    const imgPath = path.join(__dirname, "../assets/img/upload");
+    form.uploadDir = imgPath;
+    form.parse(req, (err, fields, files) =>
     {
-        if (err)
+        if (err) return;
+        let avatar;
+        let profileUser;
+        if (files.avatar)
         {
-            res.send({
-                status: 400,
-                msg: "出錯啦！"
-            });
+            let imgName = path.basename(files.avatar.path);
+            avatar = "/assets/img/upload/" + imgName;
+            profileUser = `UPDATE users SET slug = "${fields.slug}", nickname = "${fields.nickname}", bio = "${fields.bio}",  avatar = "${avatar}" WHERE id = ${fields.id}`;
         }
         else
+            profileUser = `UPDATE users SET slug = "${fields.slug}", nickname = "${fields.nickname}", bio = "${fields.bio}" WHERE id = ${fields.id}`;
+        db.myQuery(profileUser, (err, result) =>
         {
-            res.send({
-                status: 200,
-                msg: "修改成功！"
-            });
-        }
+            if (err)
+            {
+                res.send({
+                    status: 400,
+                    msg: "出錯啦！"
+                });
+            }
+            else
+            {
+                // 如果修改的是登錄的賬戶，需要重新設置xession
+                if (fields.id == req.session.obj.id)
+                {
+                    let getUser = `SELECT * FROM users WHERE id = ${fields.id}`;
+                    db.myQuery(getUser, (err1, result) =>
+                    {
+                        if (err1) console.log(err1);
+                        req.session.obj = {
+                            email: result[0].email,
+                            password: result[0].password,
+                            nickname: result[0].nickname,
+                            avatar: result[0].avatar,
+                            slug: result[0].slug,
+                            bio: result[0].bio,
+                            id: result[0].id,
+                        };
+                        // 因為是異步請求，有可能已經返回了這裡還沒改變session，所以返回得寫兩遍
+                        res.send({
+                            status: 200,
+                            msg: "修改成功！"
+                        });
+                    });
+                }
+                else
+                {
+                    res.send({
+                        status: 200,
+                        msg: "修改成功！"
+                    });
+                }
+            }
+        });
     });
 }

@@ -25,6 +25,7 @@ router.use((req, res, next) =>
 });
 
 router.get("/", indexContr.getIndex)  // 打開頁面時加載登錄頁面
-
+    .get("/getAdminMsg", indexContr.getAdminMsg)  // 獲取管理員頭像、名字
+    .get("/geRenZhongXin", indexContr.geRenZhongXin)  //進入個人中心
 
 module.exports = router;

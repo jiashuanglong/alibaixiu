@@ -1,7 +1,7 @@
 <div class="aside">
     <div class="profile">
-        <img class="avatar" src="/assets/uploads/avatar.jpg">
-        <h3 class="name">布頭兒</h3>
+        <img id="adminAvtatr" class="avatar" src="/assets/uploads/avatar.jpg">
+        <h3 id="adminName" class="name">布頭兒</h3>
     </div>
     <ul class="nav">
         <li>
@@ -35,3 +35,18 @@
         </li>
     </ul>
 </div>
+<script>
+    // 頁面加載完畢後從session中獲取登錄賬戶的頭像和名字
+    window.onload = () =>
+    {
+        $.ajax({
+            method: "get",
+            url: "/getAdminMsg",
+            success: result =>
+            {
+                document.querySelector("#adminAvtatr").src = result.avatar ? result.avatar : "../assets/img/default.png";
+                document.querySelector("#adminName").innerHTML = result.nickname;
+            }
+        });
+    }
+</script>

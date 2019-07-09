@@ -1,7 +1,27 @@
 <nav class="navbar">
     <button class="btn btn-default navbar-btn fa fa-bars"></button>
     <ul class="nav navbar-nav navbar-right">
-        <li><a href="profile.html"><i class="fa fa-user"></i>個人中心</a></li>
-        <li><a href="login.html"><i class="fa fa-sign-out"></i>退出</a></li>
+        <li><a href="/geRenZhongXin"><i class="fa fa-user"></i>個人中心</a></li>
+        <li><a id="logout" href="javascript:void(0)"><i class="fa fa-sign-out"></i>退出</a></li>
     </ul>
 </nav>
+<script>
+    // 退出登錄
+    const logout = document.querySelector("#logout");
+    logout.onclick = () =>
+    {
+        if (confirm("您確實要退出嗎？"))
+        {
+            $.ajax({
+                method: "get",
+                url: "/logout",
+                success: result =>
+                {
+                    alert(result.msg);
+                    if (result.status == 200)
+                        window.location = "/login";
+                }
+            });
+        }
+    }
+</script>

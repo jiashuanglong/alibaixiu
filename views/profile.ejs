@@ -13,13 +13,13 @@
         <strong>错误！</strong>发生XXX错误
       </div> -->
       <form id="form" class="form-horizontal">
-        <input type="hidden" name="id" value="<%= id %>">
+        <input id="adminId" type="hidden" name="id" value="<%= id %>">
         <div class="form-group">
           <label class="col-sm-3 control-label">头像</label>
           <div class="col-sm-6">
             <label class="form-image">
-              <input id="avatar" type="file">
-              <img name="avatar" src="<%= avatar %>">
+              <input id="avatar" type="file" accept=".JPG,.PNG,.GIF,.TIFF,.BMP">
+              <img id="adminImg" name="avatar" src="<%= avatar %>" style="width: 150px; height: 150px;">
               <i class="mask fa fa-upload"></i>
             </label>
           </div>
@@ -66,16 +66,42 @@
 <% include layout/footer %>
 
 <script>
-  // 處理提交修改的函數
+  // 圖片預覽
+  const avatar = document.querySelector("#avatar");
+  const adminImg = document.querySelector("#adminImg");
+  avatar.onchange = () =>
+  {
+    // inputImg是上傳文件標籤，但這個標籤有個files屬性，表示選中的圖片。
+    // 由於圖片可能是多選，所以files屬性值是一個數組，所以寫成files[0]
+    let url = URL.createObjectURL(avatar.files[0]);
+    adminImg.src = url;
+  }
+
+  // 提交修改
   const submitBtn = document.querySelector("#submitBtn");
   submitBtn.onclick = e =>
   {
     e.preventDefault();
-    let params = $("#form").serialize();
+    let adminId = document.querySelector("#adminId").value;
+    let slug = document.querySelector("#slug").value;
+    let nickname = document.querySelector("#nickname").value;
+    let bio = document.querySelector("#bio").value;
+    let avatar = document.querySelector("#avatar").files[0];
+    // data只能用於提交鍵值對參數，提交文件不能用data
+    // 提交文件要用FormData
+    const formdata = new FormData();
+    // 添加參數
+    formdata.append("id", adminId);
+    formdata.append("slug", slug);
+    formdata.append("nickname", nickname);
+    formdata.append("bio", bio);
+    formdata.append("avatar", avatar);
     $.ajax({
       method: "post",
       url: "/profileuser",
-      data: params,
+      data: formdata,
+      processData: false,
+      contentType: false,
       success: result =>
       {
         alert(result.msg);
