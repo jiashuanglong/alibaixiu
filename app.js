@@ -7,6 +7,7 @@ const loginRouter = require("./router/loginRouter.js");
 const indexRouter = require("./router/indexRouter.js");
 const usersRouter = require("./router/usersRouter.js");
 const categoriesRouter = require("./router/categoriesRouter.js");
+const postAddRouter = require("./router/postAddRouter.js");
 // 創建服務器
 const app = express();
 
@@ -37,7 +38,7 @@ app.use(loginRouter);
 app.use(indexRouter);
 app.use(usersRouter);
 app.use(categoriesRouter);
-
+app.use(postAddRouter);
 
 
 // 開啟服務器
