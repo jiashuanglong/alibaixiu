@@ -64,7 +64,7 @@
                 <td><%= result[i].email %></td>
                 <td><%= result[i].slug %></td>
                 <td><%= result[i].nickname %></td>
-                <td><%= result[i].status %></td>
+                <td><%= result[i].statuss %></td>
                 <td class="text-center">
                   <a href="profile?id=<%= result[i].id %>" class="btn btn-default btn-xs">编辑</a>
                   <a onclick="delUser('<%= result[i].id %>')" href="javascript:void(0);" class="btn btn-danger btn-xs">删除</a>
@@ -92,7 +92,7 @@
     <td>{{ $value.email }}</td>
     <td>{{ $value.slug }}</td>
     <td>{{ $value.nickname }}</td>
-    <td>{{ $value.status }}</td>
+    <td>{{ $value.statuss }}</td>
     <td class="text-center">
       <a href="profile?id={{ $value.id }}" class="btn btn-default btn-xs">編輯</a>
       <a onclick="delUser({{ $value.id }})" href="javascript:void(0);" class="btn btn-danger btn-xs">刪除</a>
