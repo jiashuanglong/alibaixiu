@@ -9,7 +9,10 @@ exports.getIndex = (req, res) =>
 // 獲取管理員頭像、名字
 exports.getAdminMsg = (req, res) =>
 {
-    res.send(req.session.obj);
+    res.send({
+        nickname: req.session.obj.nickname,
+        avatar: req.session.obj.avatar
+    });
 }
 
 //進入個人中心

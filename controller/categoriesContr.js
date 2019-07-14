@@ -106,8 +106,9 @@ exports.editCategories = (req, res) =>
 exports.delCategories = (req, res) =>
 {
     let id = req.query.id;
-    let delSql = `DELETE FROM categories WHERE id = ${id}`;
-    db.myQuery(delSql, (err, results) =>
+    // 先把這個分類的文章全部劃歸到未分類
+    let alterSql = `UPDATE posts SET category_id = 1 WHERE category_id = ${id}`;
+    db.myQuery(alterSql, (err, results) =>
     {
         if (err)
         {
@@ -118,9 +119,25 @@ exports.delCategories = (req, res) =>
         }
         else
         {
-            res.send({
-                status: 200,
-                msg: "刪除成功！"
+            // 然後刪除這個分類
+            let delSql = `DELETE FROM categories WHERE id = ${id}`;
+            db.myQuery(delSql, (err1, results1) =>
+            {
+                if (err1)
+                {
+                    res.send({
+                        status: 400,
+                        msg: "出錯啦！"
+                    });
+                }
+                else
+                {
+
+                    res.send({
+                        status: 200,
+                        msg: "刪除成功！"
+                    });
+                }
             });
         }
     });

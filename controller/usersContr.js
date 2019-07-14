@@ -20,7 +20,7 @@ exports.getUsers = (req, res) =>
 exports.adduser = (req, res) =>
 {
     let obj = req.body;
-    let addSql = `INSERT INTO users (slug, email, password, nickname, status) VALUES ("${obj.slug}", "${obj.email}", "${obj.password}", "${obj.nickname}", "activated")`;
+    let addSql = `INSERT INTO users (slug, email, password, nickname, statuss) VALUES ("${obj.slug}", "${obj.email}", "${obj.password}", "${obj.nickname}", "activated")`;
     db.myQuery(addSql, (err, result) =>
     {
         if (err)
@@ -94,10 +94,9 @@ exports.getProfile = (req, res) =>
     let getUser = `SELECT * FROM users WHERE id = ${id}`;
     db.myQuery(getUser, (err, result) =>
     {
-        if (err)
-            alert("出錯啦！");
-        else
-            res.render("profile", result[0]);
+        if (!result[0].avatar)
+            result[0].avatar = "/assets/img/default.png";
+        res.render("profile", result[0]);
     });
 }
 
@@ -167,4 +166,70 @@ exports.postProfile = (req, res) =>
             }
         });
     });
+}
+
+// 處理點擊修改密碼
+exports.passwordReset = (req, res) =>
+{
+    res.render("passwordReset", {});
+}
+
+// 提交修改密碼
+exports.postPasswordReset = (req, res) =>
+{
+    // 獲取賬戶密碼
+    let getPasswordSql = `SELECT * FROM users WHERE id = ${req.body.id}`;
+    db.myQuery(getPasswordSql, (err, result) =>
+    {
+        if (err) return;
+        if (req.body.old != result[0].password)
+        {
+            res.send({
+                status: 300,
+                msg: "您好，舊密碼輸入錯誤"
+            });
+        }
+        else if(req.body.password == req.body.old)
+        {
+            res.send({
+                status: 301,
+                msg: "您好，新密碼不能與舊密碼相同"
+            });
+        }
+        else
+        {
+            // 舊密碼輸隊、新舊密碼不重複時開始修改密碼
+            let resetPasswordSql = `UPDATE users SET password = "${req.body.password}" WHERE id = ${req.body.id}`;
+            db.myQuery(resetPasswordSql, (err, result1) =>
+            {
+                if (err)
+                {
+                    res.send({
+                        status: 400,
+                        msg: "出錯啦！"
+                    });
+                }
+                else
+                {
+                    if (req.body.id == req.session.id)
+                    {
+                        req.session.password = req.body.password;
+                        res.send({
+                            status: 200,
+                            msg: "修改密碼成功！"
+                        });
+                    }
+                    else
+                    {
+                        res.send({
+                            status: 200,
+                            msg: "修改密碼成功！"
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    
 }

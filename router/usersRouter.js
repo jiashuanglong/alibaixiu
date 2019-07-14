@@ -38,4 +38,16 @@ router.post("/profileuser", (req, res) =>
     usersContr.postProfile(req, res);
 });
 
+// 處理點擊修改密碼
+router.get("/passwordReset", (req, res) =>
+{
+    usersContr.passwordReset(req, res);
+});
+
+// 提交修改密碼
+router.post("/postPasswordReset", (req, res) =>
+{
+    usersContr.postPasswordReset(req, res);
+});
+
 module.exports = router;

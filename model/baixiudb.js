@@ -5,7 +5,9 @@ module.exports.myQuery = (strSql, callback) =>
         host: "localhost",
         user: "root",
         password: "021509070235",
-        database: "baixiu"
+        database: "baixiu",
+        // 是否允許同時執行多久Sql語句
+        multipleStatements: true
     });
     connection.connect();
     connection.query(strSql, (err, results) =>
