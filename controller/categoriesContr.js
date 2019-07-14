@@ -7,7 +7,7 @@ exports.getCategories = (req, res) =>
 }
 
 // 渲染頁面
-exports.renderPage = (req, res) =>
+exports.getAllCategories = (req, res) =>
 {
     db.myQuery("SELECT * FROM categories", (err, result) =>
     {

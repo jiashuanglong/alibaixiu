@@ -1,0 +1,144 @@
+<% include layout/head %>
+
+  <div class="main">
+
+    <% include layout/nav %>
+
+    <div class="container-fluid">
+      <div class="page-title">
+        <h1>編輯文章</h1>
+      </div>
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+      <form class="row" id="editForm">
+        <input id="postId" type="hidden" value="<%= id %>">
+        <div class="col-md-9">
+          <div class="form-group">
+            <label for="title">標題</label>
+            <input id="title" class="form-control input-lg" name="title" type="text" value="<%= title %>" placeholder="文章標題">
+          </div>
+          <div class="form-group">
+            <label for="content">內容</label>
+            <textarea id="content" class="form-control input-lg" name="content" cols="30" rows="10" placeholder="內容"><%= content %></textarea>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="slug">別名</label>
+            <input id="slug" class="form-control" name="slug" type="text" value="<%= slug %>" placeholder="slug">
+            <p class="help-block">https://zce.me/post/<strong>slug</strong></p>
+          </div>
+          <div class="form-group">
+            <label for="feature">特色圖像</label>
+            <!-- show when image chose -->
+            <img id="adminImg" class="help-block thumbnail" src="<%= feature %>" style="height: 100px; width: 100px">
+            <input id="feature" class="form-control" name="feature" type="file">
+          </div>
+          <div class="form-group">
+            <input type="hidden" id="categoryHidden" value="<%= category_id %>">
+            <label for="category">所屬分類</label>
+            <select id="category" class="form-control" name="category">
+            </select>
+          </div>
+          <div class="form-group">
+              
+            <label for="created">發佈時間</label>
+            
+            <input id="created" class="form-control" name="created" type="datetime-local" value="<%= created %>">
+          </div>
+          <div class="form-group">
+            <input type="hidden" id="statusHidden" value="<%= status %>">
+            <label for="status">狀態</label>
+            <select id="status" class="form-control" name="status">
+              <option value="草稿">草稿</option>
+              <option value="已發佈">已發佈</option>
+              <option value="已放棄">已放棄</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary" id="editSubmit">保存</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <% include layout/aside %>
+
+  <% include layout/footer %>
+
+  <!-- 分類下拉框渲染模板 -->
+  <script id="tmp" type="text/html">
+    {{ each data }}
+      <option value="{{ $value.id }}">{{ $value.name }}</option>
+    {{ /each }}
+  </script>
+
+  <script>
+    // 渲染分類下拉框
+    $.ajax({
+      method: "get",
+      url: "/getAllCategories",
+      success: result =>
+      {
+        if (result.status == 200)
+        {
+          let str = template("tmp", result);
+          $("#category").html(str);
+          // 順便處理下分類下拉框、狀態下拉框、發佈時間表單
+          $("#category").val($("#categoryHidden").val());
+          $("#status").val($("#statusHidden").val());
+          $("#created").val(moment($("#created").attr("value")).format().split("+")[0]);
+        }
+      }
+    });
+
+    // 提交編輯文章
+    // 頭像預覽
+    $("#feature").on("change", () =>
+    {
+      $("#adminImg").attr("src", URL.createObjectURL($("#feature")[0].files[0]));
+    });
+
+    // 提交編輯
+    $("#editSubmit").on("click", e =>
+    {
+      e.preventDefault();
+      let id = $("#postId").val();
+      let title = $("#title").val();
+      let content = $("#content").val();
+      let slug = $("#slug").val();
+      let feature = $("#feature")[0].files[0];
+      let category = $("#category").val();
+      let created = $("#created").val();
+      let status = $("#status").val();
+
+      const formdata = new FormData();
+
+      formdata.append("id", id);
+      formdata.append("title", title);
+      formdata.append("content", content);
+      formdata.append("slug", slug);
+      formdata.append("feature", feature);
+      formdata.append("category", category);
+      formdata.append("created", created);
+      formdata.append("status", status);
+      
+      $.ajax({
+        method: "post",
+        url: "/sumitPostEdit",
+        data: formdata,
+        processData: false,
+        contentType: false,
+        success: result =>
+        {
+            alert(result.msg);
+            if (result.status == 200)
+              window.location = "/getPostsPage";
+        }
+      });
+    });
+  </script>

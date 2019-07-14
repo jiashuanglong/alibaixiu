@@ -77,7 +77,7 @@
     {
       $.ajax({
         method: "get",
-        url: "/renderpage",
+        url: "/getAllCategories",
         success: result =>
         {
           if (result.status == 200)
@@ -91,7 +91,7 @@
       });
     }
 
-    // 打開頁面時渲染頁面+
+    // 打開頁面時渲染頁面
     renderPage ();
 
     // 添加新分類 / 提交修改
